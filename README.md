@@ -16,3 +16,7 @@ Examples for curl commands to run each method can be found as a commend above th
 `npm install`
 
 `npm run dev`
+
+# TOTO:
+* For the POST and PUT method have something that checks the correct form of {"username": "STRING", "password": "STRING"}
+* For GET all method find a way to encrypt the password as SHA1(USERNAME+PASSWORD)
