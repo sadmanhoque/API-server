@@ -20,4 +20,4 @@ Examples for curl commands to run each method can be found as a commend above th
 `docker build . --tag rest-api`
 
 # TODO:
-For whatever reason GET method for all keeps accepting the requests sent for the GET method for specific ID.
+The Auth token is just embedded into the code, typically this should be generated when user logs in in some way, but there's no login function at the moment so it's just in plain text in the code.
