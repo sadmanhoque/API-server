@@ -26,15 +26,10 @@ const schema = {
     additionalProperties: false
 }
 
-// GET all
-//curl -H "Authorization: example" http://localhost:3000/v1/user
+// GET
+//curl -H "Authorization: example" http://localhost:3000/v1/user?user_id=2
 app.get('/v1/user', (req, res) => {
-    res.json(data);
-});
 
-// GET by id
-//curl -H "Authorization: example" http://localhost:3000/v2/user?user_id=2
-app.get('/v2/user', (req, res) => {
     const userId = parseInt(req.query.user_id);
     const user = data.find((user) => user.user_id === userId);
 
@@ -44,6 +39,8 @@ app.get('/v2/user', (req, res) => {
             "username": user.username,
             "password": sha1(user.username + user.password)
         }]);
+    } else if (!userId) {
+        res.json(data);
     } else {
         res.status(404).json({ message: 'User not found' });
     }
