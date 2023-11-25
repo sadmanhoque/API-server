@@ -4,22 +4,10 @@ var sha1 = require('sha1');
 
 const app = express();
 const port = 3000;
-
-// Middleware to authenticate requests
-const authenticate = (req, res, next) => {
-    const token = req.headers.authorization;
-
-    // Replace 'your-secret-token' with your actual secret token
-    if (token && token === 'FKwf1QPEDh0Nuaa') {
-        // Authentication successful
-        next();
-    } else {
-        res.status(401).json({ message: 'Unauthorized' });
-    }
-};
+const Ajv = require("ajv")
+const ajv = new Ajv()
 
 app.use(bodyParser.json());
-app.use(authenticate);
 
 // Sample data (replace with your own data storage mechanism)
 let data = [
@@ -28,6 +16,15 @@ let data = [
     { "user_id": 3, "username": "Item 3", "password": "9348o756gkl" }
 ];
 let nextUderId = 4;
+const schema = {
+    type: "object",
+    properties: {
+        username: { type: "string" },
+        password: { type: "string" }
+    },
+    required: ["username"],
+    additionalProperties: false
+}
 
 // GET all
 //curl -H "Authorization: example" http://localhost:3000/v1/user
@@ -53,9 +50,12 @@ app.get('/v2/user', (req, res) => {
 });
 
 // POST new user
-//curl -X POST -H "Content-Type: application/json, Authorization: example" -d '{"name": "New Item", "password": "sdfsdfsd"}' http://localhost:3000/v1/user
+//curl -X POST -H "Content-Type: application/json, Authorization: example" -d '{"username": "New Item", "password": "sdfsdfsd"}' http://localhost:3000/v1/user
 app.post('/v1/user', (req, res) => {
     const newUser = req.body;
+    const valid = ajv.validate(schema, newUser)
+    if (!valid) res.status(400).json("input format error")
+
     newUser.id = nextUderId++
     data.push(newUser);
     res.status(201).json(newUser);
@@ -67,6 +67,8 @@ app.put('/v1/user', (req, res) => {
     const usernameId = parseInt(req.query.user_id);
     const updatedusername = req.body;
     const index = data.findIndex((username) => username.user_id === usernameId);
+    const valid = ajv.validate(schema, newUser)
+    if (!valid) res.status(400).json("input format error")
 
     if (index !== -1) {
         data[index] = { ...data[index], ...updatedusername };
